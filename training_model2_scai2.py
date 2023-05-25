@@ -36,8 +36,8 @@ parser.add_argument('--alignf', type=str, help='type link file path')
 parser.add_argument('--modelname', type=str,help='model name and data path')
 parser.add_argument('--GPU', type=str, default='0', help='GPU Usage')
 # hyper-parameters
-parser.add_argument('--dim1', type=int, default=300,help='Entity dimension') #update dim
-parser.add_argument('--dim2', type=int, default=300,help='Concept dimension') #update dim
+parser.add_argument('--dim1', type=int, default=100,help='Entity dimension') #update dim
+parser.add_argument('--dim2', type=int, default=100,help='Concept dimension') #update dim
 
 parser.add_argument('--batch_K1', type=int, default=256,help='Entity dimension') #batch K1
 parser.add_argument('--batch_K2', type=int, default=64,help='Concept dimension') #batch K2
@@ -118,14 +118,11 @@ this_data.load_align(filename = alignf, lan1 = 'ins', lan2 = 'onto', splitter = 
 
 m_train = Trainer()
 #udpate dim
-m_train.build(this_data, method=args.method, bridge=args.bridge, dim1=args.dim1, dim2=args.dim2, 
+m_train.build(this_data, method=args.method, bridge=args.bridge, dim1=args.dim1, dim2=args.dim2,
 	batch_sizeK1=args.batch_K1, batch_sizeK2=args.batch_K2, batch_sizeA=args.batch_A, 
 	a1=args.a1, a2=args.a2, m1=args.m1, m2=args.m2, save_path = model_path, multiG_save_path = data_path, 
 	log_save_path = tf_log_path , L1=False)
 
 
-m_train.train(epochs=2, save_every_epoch=1, lr=0.0005, a1=args.a1, a2=args.a2, m1=args.m1, m2=args.m2, AM_fold=args.fold)
-
-
-
-
+m_train.train(epochs=100, save_every_epoch=1, lr=0.0005, a1=args.a1, a2=args.a2, m1=args.m1, m2=args.m2, AM_fold=args.fold)
+run(global_step_tensor)) # returns 1000

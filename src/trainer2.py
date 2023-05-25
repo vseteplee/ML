@@ -51,6 +51,7 @@ class Trainer(object):
                                  method=self.method,
                                  bridge=self.bridge,
                                  dim1=dim1,
+
                                  dim2=dim2,
                                  batch_sizeK1=self.batch_sizeK1,
                                  batch_sizeK2=self.batch_sizeK2,
@@ -231,8 +232,8 @@ class Trainer(object):
         return (loss_KM, loss_AM)
 
     def train(self, epochs=20, save_every_epoch=10, lr=0.001, a1=0.1, a2=0.05, m1=0.5, m2=1.0, AM_fold=1, half_loss_per_epoch=-1):
-        #sess = tf.compat.v1.Session()
-        #sess.run(tf.initialize_all_variables())
+        sess = tf.compat.v1.Session()
+        sess.run(tf.initialize_all_variables())
         self.tf_parts._m1 = m1  
         t0 = time.time()
         for epoch in range(epochs):
@@ -255,15 +256,15 @@ class Trainer(object):
 # A safer loading is available in Tester, with parameters like batch_size and dim recorded in the corresponding Data component
 def load_tfparts(multiG, method='transe', bridge='CG-one', dim1=300, dim2=100, batch_sizeK1=1024, batch_sizeK=1024, batch_sizeA=64,
                 save_path = 'this-model.ckpt', L1=False):
-    tf_parts = model.TFParts(num_rels1=multiG.KG1.num_rels(), 
+    tf_parts = model.TFParts(num_rels1=multiG.KG1.num_rels(),
                             num_ents1=multiG.KG1.num_ents(), 
                             num_rels2=multiG.KG2.num_rels(), 
                             num_ents2=multiG.KG2.num_ents(),
                             method=self.method,
                             bridge=self.bridge, 
                             dim1=dim1, 
-                            dim2=dim2, 
-                            batch_sizeK=batch_sizeK, 
+                            dim2=dim2,
+                            batch_sizeK=batch_sizeK,
                             batch_sizeA=batch_sizeA, 
                             L1=L1)
     #with tf.compat.v1.Session() as sess:

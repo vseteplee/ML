@@ -90,6 +90,7 @@ class TFParts(object):
             self._ht1_norm = tf.nn.l2_normalize(ht1, 1)
             self._ht2_norm = tf.nn.l2_normalize(ht2, 1)
 
+
             ######################## Graph A Loss #######################
             # Language A KM loss : [|| h + r - t ||_2 + m1 - || h + r - t ||_2]+    here [.]+ means max (. , 0)
             self._A_h_index = A_h_index = tf.compat.v1.placeholder(
@@ -197,6 +198,9 @@ class TFParts(object):
             B_tn_ent_batch = tf.nn.l2_normalize(tf.nn.embedding_lookup(ht2,B_tn_index), 1)
 
 
+
+
+
             if self.method == 'transe':
                 #### TransE Score
                 # This stores h + r - t
@@ -258,7 +262,7 @@ class TFParts(object):
             AM_ent1_nbatch = tf.nn.l2_normalize(tf.nn.embedding_lookup(ht1, AM_nindex1), 1)
             AM_ent2_nbatch = tf.nn.l2_normalize(tf.nn.embedding_lookup(ht2, AM_nindex2), 1)
 
-            # Affine map
+            # Affine map - параметры для аффинного преобразования: умножение на M и сдвиг на b для концептов/сущностей соотв.
             self._M = M = tf.compat.v1.get_variable(name='M', shape=[self._dim1, self._dim2],initializer=orthogonal_initializer(),dtype=tf.float32)
             self._b = bias = tf.compat.v1.get_variable(name='b', shape=[self._dim2],initializer=tf.truncated_normal_initializer,dtype=tf.float32)
             self._Mc = Mc = tf.compat.v1.get_variable(name='Mc', shape=[self._dim2, self._hidden_dim],initializer=orthogonal_initializer(),dtype=tf.float32)
@@ -318,13 +322,40 @@ class TFParts(object):
             tf.compat.v1.summary.scalar("A_loss", A_loss)
             tf.compat.v1.summary.scalar("B_loss", B_loss)
             tf.compat.v1.summary.scalar("AM_loss", AM_loss)
-            
+
+            tf.compat.v1.summary.tensor_summary('B_h_ent_batch', B_h_ent_batch)
+
             # Optimizer
             self._lr = lr = tf.compat.v1.placeholder(tf.float32)
             self._opt = opt = tf.compat.v1.train.AdamOptimizer(lr) #AdagradOptimizer(lr)#GradientDescentOptimizer(lr)
             self._train_op_A = train_op_A = opt.minimize(A_loss)
             self._train_op_B = train_op_B = opt.minimize(B_loss)
             self._train_op_AM = train_op_AM = opt.minimize(AM_loss)
+
+            '''
+            with open("111.txt", "w") as file:
+                file.write(str(dir(B_h_ent_batch)) + '\n\n\n' + \
+                           str(B_h_ent_batch) + '\n\n\n' + \
+                           # str(B_h_ent_batch.eval)+'\n\n\n'+\
+                           # str(B_h_ent_batch.consumers)+'\n\n\n'+\
+                           # str(B_h_ent_batch.device)+'\n\n\n'+\
+                           # str(B_h_ent_batch.op)+'\n\n\n'+\
+                           # str(B_h_ent_batch.value_index)+\
+                           str(B_h_ent_batch.graph) + '\n\n\n' + \
+                           str(B_h_ent_batch.graph.get_all_collection_keys()) + '\n\n\n' + \
+                           str(B_h_ent_batch.graph.get_collection('variables')) + '\n\n\n' + \
+                           str(dir(B_h_ent_batch.graph.get_collection('variables')[0])) + '\n\n\n' + \
+                           str(B_h_ent_batch.graph.get_collection('variables')[0].value()) + '\n\n\n' + \
+                           # str(B_h_ent_batch.graph.get_collection('variables')[0].value().graph.get_collection('variables')[0].value()) + '\n\n\n' + \
+                           # str(B_h_ent_batch.graph.get_collection('trainable_variables')) + '\n\n\n' + \
+                           str(B_h_ent_batch.graph.get_collection('summaries')) + '\n\n\n' + \
+                           # str(B_h_ent_batch.graph.get_collection_ref()) + '\n\n\n' + \
+                           # str(B_h_ent_batch.graph.get_name_scope()) + '\n\n\n' + \
+                           # str(B_h_ent_batch.graph.get_operations()) + '\n\n\n' + \
+                           # str(B_h_ent_batch.graph.seed()) + '\n\n\n' + \
+                           #
+                           str(dir(B_h_ent_batch.graph)) + '\n\n\n')
+            '''
 
             # Saver
             self.summary_op = tf.compat.v1.summary.merge_all()

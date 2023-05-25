@@ -10,7 +10,8 @@ from tqdm import tqdm
 import os
 
 class KG(object):
-    '''This class stores triple data, descriptions, and word embeddings for a langauge.
+    '''This class stores
+     data, descriptions, and word embeddings for a langauge.
     '''
 
     def __init__(self):
@@ -82,6 +83,7 @@ class KG(object):
         # calculate tph and hpt
         tph_array = np.zeros((len(self.rels), len(self.ents)))
         hpt_array = np.zeros((len(self.rels), len(self.ents)))
+        # степени вершин с учетом ориентации ребер
         for h,r,t in self.triples:
             tph_array[r][h] += 1.
             hpt_array[r][t] += 1.
